@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/styles.css">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        <div class="header">
+            <div class="logo" @click="currentPage='main'">
+                TESHOP
+            </div>
+            <div class="header-nav">
+                <div class="nav-item" @click="currentPage='catalog'">Каталог</div>
+                <div class="nav-item" @click="currentPage='map'">Где нас найти?</div>
+                <div class="nav-item" @click="currentPage='cart'">Корзина</div>
+                <div class="nav-item" @click="currentPage='login'">Войти</div>
+                <div class="nav-item" @click="currentPage='register'">Регистрация</div>
+            </div>
+        </div>
+        <div class="wrapper">
+            <div class="main-page" v-if="currentPage==='main'">
+                <div class="slider">
+                    <div class="slider-nav">
+                        <div class="slider-button-left" @click="prevSlide()">></div>
+                        <div class="slider-button-right" @click="nextSlide()">></div>
+                    </div>
+                    <div class="slider-slides" :style="slide()">
+                        <img :src="item" alt="" v-for="(item, index) in sliderPics" :key="index">
+                    </div>
+                </div>
+                <div class="new-items-title">НОВИНКИ</div>
+                <div class="new-items">
+                    <div class="new-item" v-for="item in newItems" :key="item.id">
+                        <div class="new-item-img">
+                            <img :src="item.img" alt="">
+                        </div>
+                        <div class="new-item-name">{{item.name}}</div>
+                        <div class="new-item-price">${{item.price}} USD</div>
+                    </div>
+                </div>
+            </div>
+            <div class="catalog-page" v-if="currentPage==='catalog'">
+                <div class="filters">
+                    <div class="filter">
+                        <label for="filter">Фильтры</label>
+                        <select name="filter" id="filter" v-model="currentFilter">
+                            <option value="0">Нет</option>
+                            <option value="1">Фильтр 1</option>
+                            <option value="2">Фильтр 2</option>
+                        </select>
+                    </div>
+                    <div class="filter">
+                        <label for="filter">Сортировка</label>
+                        <select name="filter" id="filter" v-model="currentSort">
+                            <option value="0">Нет</option>
+                            <option value="1">По возрастранию</option>
+                            <option value="2">По убыванию</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="catalog-items">
+                    <div class="new-item" v-for="item in sort" :key="item.id" v-show="currentFilter===item.type|| currentFilter=='0'">
+                        <div class="new-item-img" @click="goToDetailedPage(item)">
+                            <img :src="item.img" alt="">
+                        </div>
+                        <div class="new-item-name">{{item.name}}</div>
+                        <div class="new-item-price">${{item.price}} USD</div>
+                        <div class="add-to-cart" @click="addToCart(item)">В корзину</div>
+                    </div>
+                </div>
+            </div>
+            <div class="map-page" v-if="currentPage==='map'">
+                <div class="map">
+                    <img src="/assets/map.jpg" alt="">
+                </div>
+                <div class="map-text">
+                    <div>Улица Астана Кесаева 43</div>
+                    <div>+79005553535</div>
+                    <div>teshop@teshop.ru</div>
+                </div>
+            </div>
+            <div class="cart-page" v-if="currentPage==='cart'">
+                <div class="cart-items" v-if="cart.length!=0">
+                    <div class="new-item" v-for="item in cart" :key="item.id">
+                        <div class="new-item-img">
+                            <img :src="item.img" alt="">
+                        </div>
+                        <div class="new-item-name">{{item.name}}</div>
+                        <div class="new-item-price">${{item.price}} USD</div>
+                        <div class="new-item-quantity">Количество:{{item.quantity}}
+                            <div class="minus-item" @click="itemQuantityMinus(item)">-</div>
+                            <div class="plus-item" @click="item.quantity++">+</div>
+                        </div>
+                        <div class="add-to-cart" @click="removeFromCart(item)">Убрать</div>
+                    </div>
+                </div>
+                <div class="empty-cart" v-else>Пусто</div>
+                <hr v-if="cart.length!=0">
+                <div class="total-sum" v-if="cart.length!=0">Итого: ${{totalSum}} USD</div>
+            </div>
+            <div class="detailed-page" v-if="currentPage==='detailed'">
+                <div class="detailed-item">
+                    <div class="detailed-img">
+                        <img :src="detailed.img" alt="">
+                    </div>
+                    <div class="detailed-price-desc">
+                        <div class="detailed-price">${{detailed.price}} USD</div>
+                        <div class="detailed-name">{{detailed.name}}</div>
+                    <div class="detailed-description">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Beatae exercitationem dignissimos iusto nostrum vero velit optio neque? Eius ad consequatur reprehenderit fugiat qui necessitatibus, consectetur explicabo sapiente harum cum eligendi.</div>
+                    <div class="add-to-cart" @click="addToCart(item)">В корзину</div>
+                    </div>
+                </div>
+            </div>
+            <div class="login-page" v-if="currentPage==='login'">
+                <div class="login-form">
+                    <div class="login-title">Войти</div>
+                    <label for="email">Email</label>
+                    <input type="email" name="email" id="email" placeholder="Введите ваш email">
+                    <label for="password">Password</label>
+                    <input type="password" name="password" id="password" placeholder="Введите ваш пароль">
+                    <div class="add-to-cart">Войти</div>
+                </div>
+            </div>
+            <div class="register-page" v-if="currentPage==='register'">
+                <div class="login-form">
+                    <div class="register-title">Регистрация</div>
+                    <label for="email">Email</label>
+                    <input type="email" name="email" id="email" placeholder="Введите ваш email">
+                    <label for="name">Ваше имя</label>
+                    <input type="text" name="name" id="name" placeholder="Введите ваше имя">
+                    <label for="password">Password</label>
+                    <input type="password" name="password" id="password" placeholder="Введите ваш пароль">
+                    <label for="password">Повторите пароль</label>
+                    <input type="password" name="password" id="password" placeholder="Повторите ваш пароль">
+                    <div class="add-to-cart">Зарегистрироваться</div>
+                </div>
+            </div>
+            <div class="admin-page" v-if="currentPage==='admin'">
+                <div class="add-product">
+                    Добавить товар
+                    <label for="name">Название</label>
+                    <input type="text" name="name" id="name">
+                    <label for="description">Описание</label>
+                    <textarea name="description" id="description"></textarea>
+                    <label for="image">Изображение</label>
+                    <input type="file" name="image" id="image">
+                    <div class="add-to-cart">Добавить</div>
+                    <div class="remove-product">
+                        Удалить товар
+                        <label for="remove"></label>
+                        <select name="remove" id="remove">
+                            <option v-for="(item, index) in items" :key="index" value="item.name"></option>
+                        </select>
+                        <div class="add-to-cart">Удалить</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <div class="footer">
+        <div class="logo">TESHOP</div>
+    </div>
+    </div>
+    <script src="/js/vue.global.js"></script>
+    <script src="/js/main.js" type="module"></script>
+</body>
+</html>
